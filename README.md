@@ -25,3 +25,6 @@ module "iam_federation" {
 | Name            | Description                            | Sensitive |
 |-----------------|----------------------------------------|-----------|
 | saml_login_page | URL for the SAML login page from Auth0 | no        |
+
+## Looking for issues?
+If you're looking to raise an issue with this module, please create a new issue in the [Modernisation Platform repository](https://github.com/ministryofjustice/modernisation-platform/issues).
