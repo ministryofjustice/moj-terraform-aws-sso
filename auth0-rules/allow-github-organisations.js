@@ -6,7 +6,7 @@
   Otherwise, it will reject the user.
 */
 async function (user, context, callback) {
-  const allowedOrganisations = configuration.ALLOWED_ORGANISATIONS
+  const allowedOrganisations = JSON.parse(configuration.ALLOWED_ORGANISATIONS)
 
   if (context.connectionStrategy === 'github') {
     const identity = user.identities.find(identity => identity.provider === 'github')

@@ -5,7 +5,7 @@
   - automatically maps team memberships to an AWS role
 */
 async function (user, context, callback) {
-  const allowedOrganisations = configuration.ALLOWED_ORGANISATIONS
+  const allowedOrganisations = JSON.parse(configuration.ALLOWED_ORGANISATIONS)
 
   if (context.connectionStrategy === 'github') {
     const identity = user.identities.find(identity => identity.provider === 'github')

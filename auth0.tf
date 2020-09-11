@@ -65,7 +65,7 @@ resource "auth0_rule_config" "aws_role_name" {
 
 resource "auth0_rule_config" "github_allowed_organisations" {
   key   = "ALLOWED_ORGANISATIONS"
-  value = var.auth0_github_allowed_orgs
+  value = jsonencode(var.auth0_github_allowed_orgs)
 }
 
 # Auth0 Rules: Attach rules from this repository
