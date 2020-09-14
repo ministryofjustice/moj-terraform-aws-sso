@@ -7,6 +7,7 @@ resource "auth0_client" "saml" {
   description = "SAML provider for the ${data.aws_iam_account_alias.current.account_alias} account"
   callbacks   = ["https://signin.aws.amazon.com/saml"]
   logo_uri    = "https://ministryofjustice.github.io/assets/moj-crest.png"
+  app_type    = "regular_web"
 
   addons {
     samlp {
@@ -24,10 +25,24 @@ resource "auth0_client" "saml" {
       name_identifier_format             = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
 
       name_identifier_probes = [
+        "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
       ]
 
     }
+  }
+}
+
+# # Auth0: Connection setup
+resource "auth0_connection" "github_saml_connection" {
+  name            = "GitHub"
+  strategy        = "github"
+  enabled_clients = [auth0_client.saml.id]
+  options {
+    client_id     = var.auth0_github_client_id
+    client_secret = var.auth0_github_client_secret
+    # Scope definitions aren't supported, but these are the ones you need in Auth0
+    scopes = ["read:user", "read:org"]
   }
 }
 
@@ -48,9 +63,22 @@ resource "auth0_rule_config" "aws_role_name" {
   value = aws_iam_role.federated_role.name
 }
 
-# Auth0 Rules: Attach JavaScript files from this repository
-resource "auth0_rule" "sample" {
-  name    = "sample"
-  script  = file("${path.module}/auth0-rules/sample-assume-role.js")
+resource "auth0_rule_config" "github_allowed_organisations" {
+  key   = "ALLOWED_ORGANISATIONS"
+  value = jsonencode(var.auth0_github_allowed_orgs)
+}
+
+# Auth0 Rules: Attach rules from this repository
+resource "auth0_rule" "allow_github_organisations" {
+  name    = "Allow specific GitHub Organisations"
+  script  = file("${path.module}/auth0-rules/allow-github-organisations.js")
   enabled = true
+  order   = 10
+}
+
+resource "auth0_rule" "map_teams_to_roles" {
+  name    = "Map teams to roles"
+  script  = file("${path.module}/auth0-rules/map-teams-to-roles.js")
+  enabled = true
+  order   = 20
 }
