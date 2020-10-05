@@ -1,6 +1,6 @@
 # moj-terraform-aws-sso
 
-This repository holds a Terraform module that creates an Auth0 application and associated integrations to enable AWS SSO.
+This Terraform module creates an Auth0 application and associated integrations to enable AWS SSO.
 
 ## Usage
 ```
