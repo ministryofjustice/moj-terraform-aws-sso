@@ -9,6 +9,7 @@ async function (user, context, callback) {
   const allowedOrganisations = JSON.parse(configuration.ALLOWED_ORGANISATIONS)
 
   if (context.connectionStrategy === 'github') {
+
     const identity = user.identities.find(identity => identity.provider === 'github')
 
     if (identity) {
@@ -25,6 +26,7 @@ async function (user, context, callback) {
         return callback(null, user, context)
       }
     }
+
   }
 
   return callback(new UnauthorizedError('Access denied.'))
