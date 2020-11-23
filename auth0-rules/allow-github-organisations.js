@@ -9,7 +9,6 @@ async function (user, context, callback) {
   const allowedOrganisations = JSON.parse(configuration.ALLOWED_ORGANISATIONS)
 
   if (context.connectionStrategy === 'github') {
-
     const identity = user.identities.find(identity => identity.provider === 'github')
 
     if (identity) {
@@ -22,11 +21,15 @@ async function (user, context, callback) {
       // Check if a user is part of an allowed organisation
       const authorised = userOrganisations.data.map(organisation => organisation.login).some(organisation => allowedOrganisations.includes(organisation))
 
+      // If user is part of the correct organisation, get teams they're a part of
+      const allTeams = await octokit.request('GET /user/teams').catch(error => callback(new Error(`Error retrieving org teams from GitHub: ${error}`)))
+      // Filter out non-authorised organisations
+      const orgTeams = allTeams.data.filter(team => allowedOrganisations.includes(team.organization.login)).map(team => team.slug)
+
       if (authorised) {
-        return callback(null, user, context)
+        return callback(null, { ...user, teams: orgTeams }, context)
       }
     }
-
   }
 
   return callback(new UnauthorizedError('Access denied.'))

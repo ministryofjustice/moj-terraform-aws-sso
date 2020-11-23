@@ -6,10 +6,9 @@
   Otherwise, it will reject the user.
 */
 async function (user, context, callback) {
-  const allowedDomains = JSON.parse(configuration.ALLOWED_DOMAINS)
+  const allowedDomain = JSON.parse(configuration.ALLOWED_DOMAINS)
 
   if (context.connectionStrategy === 'github') {
-
     const identity = user.identities.find(identity => identity.provider === 'github')
 
     if (identity) {
@@ -20,17 +19,12 @@ async function (user, context, callback) {
       const userEmails = await octokit.request('GET /user/emails').catch(error => callback(new Error(`Error retrieving email addresses from GitHub: ${error}`)))
 
       // Check if any of the user's email addresses end with an authorized domain
-      const authorisedEmails = userEmails.data.map(email => email.email).filter(email => {
-        for (const domain of allowedDomains) {
-          return email.endsWith(domain)
-        }
-      })
+      const authorisedEmails = userEmails.data.map(email => email.email).filter(email => email.endsWith(allowedDomain))
 
       if (authorisedEmails.length) {
-        return callback(null, {...user, emails: authorisedEmails}, context)
+        return callback(null, { ...user, emails: authorisedEmails }, context)
       }
     }
-
   }
 
   return callback(new UnauthorizedError('Access denied.'))

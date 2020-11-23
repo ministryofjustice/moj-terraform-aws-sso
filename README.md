@@ -13,9 +13,12 @@ module "sso" {
   auth0_github_client_id     = ""
   auth0_github_client_secret = ""
   auth0_github_allowed_orgs  = ["ministryofjustice"]
-  auth0_allowed_domains      = ["@digital.justice.gov.uk"]
+  auth0_allowed_domains      = "@digital.justice.gov.uk"
   auth0_aws_sso_acs_url      = "https://region.signin.aws.amazon.com/platform/saml/acs/${random-key}"
   auth0_aws_sso_issuer_url   = "https://region.signin.aws.amazon.com/platform/saml/${random-key}"
+  sso_aws_region             = "eu-west-2"
+  sso_scim_token             = "${random-string}"
+  sso_tenant_id              = "${random-string}"
 }
 ```
 
@@ -29,6 +32,9 @@ module "sso" {
 | auth0_github_client_id     | GitHub OAuth app client ID for an Auth0 social connection            | string  | n/a     | yes      |
 | auth0_github_client_secret | GitHub OAuth app client secret for an Auth0 social connection        | string  | n/a     | yes      |
 | auth0_github_allowed_orgs  | A list of organisations a user has to be part of to authenticate     | list    | n/a     | yes      |
-| auth0_allowed_domains      | A list of authorised domains a user can have in their GitHub account | list    | n/a     | yes      |
+| auth0_allowed_domains      | An authorised domain a user must have in their GitHub account        | string  | n/a     | yes      |
 | auth0_aws_sso_acs_url      | AWS SSO ACS URL, as provided by AWS when you set up AWS SSO          | string  | n/a     | yes      |
 | auth0_aws_sso_issuer_url   | AWS SSO Issuer URL, as provided by AWS when you set up AWS SSO       | string  | n/a     | yes      |
+| sso_aws_region             | Region that AWS SSO is configured in (required for the SCIM URL)     | string  | n/a     | yes      |
+| sso_scim_token             | AWS SSO SCIM token                                                   | string  | n/a     | yes      |
+| sso_tenant_id              | AWS SSO tenant ID                                                    | string  | n/a     | yes      |
