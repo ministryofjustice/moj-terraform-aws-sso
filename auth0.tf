@@ -70,6 +70,21 @@ resource "auth0_rule_config" "github_allowed_domains" {
   value = jsonencode(var.auth0_allowed_domains)
 }
 
+resource "auth0_rule_config" "sso_aws_region" {
+  key   = "SSO_REGION"
+  value = jsonencode(var.sso_aws_region)
+}
+
+resource "auth0_rule_config" "sso_scim_token" {
+  key   = "SSO_SCIM_TOKEN"
+  value = jsonencode(var.sso_scim_token)
+}
+
+resource "auth0_rule_config" "sso_tenant_id" {
+  key   = "SSO_TENANT_ID"
+  value = jsonencode(var.sso_tenant_id)
+}
+
 # Auth0 Rules: Attach rules from this repository
 resource "auth0_rule" "allow_github_organisations" {
   name    = "Allow specific GitHub Organisations"
@@ -90,4 +105,11 @@ resource "auth0_rule" "saml_mappings" {
   script  = file("${path.module}/auth0-rules/saml-mappings.js")
   enabled = true
   order   = 30
+}
+
+resource "auth0_rule" "update_jit_user" {
+  name    = "Update AWS SSO SCIM user with the correct groupings"
+  script  = file("${path.module}/auth0-rules/update-jit-user.js")
+  enabled = true
+  order   = 40
 }
