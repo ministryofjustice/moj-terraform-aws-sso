@@ -49,6 +49,12 @@ variable "auth0_aws_sso_issuer_url" {
   type        = string
 }
 
+variable "auth0_rule_enable_email_address_check" {
+  type        = bool
+  description = "Whether to enable the email address check rule in Auth0"
+  default     = false
+}
+
 variable "sso_aws_region" {
   type        = string
   description = "Region that AWS SSO is configured in (required for the SCIM URL)"

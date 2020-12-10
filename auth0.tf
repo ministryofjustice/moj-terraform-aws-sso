@@ -55,11 +55,6 @@ resource "auth0_connection" "github_saml_connection" {
 
 # Auth0 Rules: Set the configuration variables,
 # which are accessible in Auth0 rules
-resource "auth0_rule_config" "aws_account_id" {
-  key   = "AWS_ACCOUNT_ID"
-  value = data.aws_caller_identity.current.account_id
-}
-
 resource "auth0_rule_config" "github_allowed_organisations" {
   key   = "ALLOWED_ORGANISATIONS"
   value = jsonencode(var.auth0_github_allowed_orgs)
@@ -96,7 +91,7 @@ resource "auth0_rule" "allow_github_organisations" {
 resource "auth0_rule" "allow_email_addresses" {
   name    = "Allow specific email addresses attached to a GitHub user"
   script  = file("${path.module}/auth0-rules/allow-email-addresses.js")
-  enabled = true
+  enabled = var.auth0_rule_enable_email_address_check
   order   = 20
 }
 

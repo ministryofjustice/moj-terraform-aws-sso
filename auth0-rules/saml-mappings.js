@@ -7,7 +7,6 @@ function (user, context, callback) {
   // AWS requires the SAML nameID format to be an email address, which must
   // exactly match an existing user in AWS SSO:
   // https://docs.aws.amazon.com/singlesignon/latest/userguide/troubleshooting.html
-  const anyAuthorisedEmail = user.emails.find(item => item)
   user.email = user.nickname + allowedDomain
   user.name = user.nickname + allowedDomain
 
