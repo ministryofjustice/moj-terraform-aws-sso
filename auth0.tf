@@ -88,14 +88,12 @@ resource "auth0_rule" "allow_github_organisations" {
   order   = 10
 }
 
-# NB: This rule is turned off due to people within the organisation not having a
-# verified email address.
-# resource "auth0_rule" "allow_email_addresses" {
-#   name    = "Allow specific email addresses attached to a GitHub user"
-#   script  = file("${path.module}/auth0-rules/allow-email-addresses.js")
-#   enabled = true
-#   order   = 20
-# }
+resource "auth0_rule" "allow_email_addresses" {
+  name    = "Allow specific email addresses attached to a GitHub user"
+  script  = file("${path.module}/auth0-rules/allow-email-addresses.js")
+  enabled = var.auth0_rule_enable_email_address_check
+  order   = 20
+}
 
 resource "auth0_rule" "saml_mappings" {
   name    = "Map user data to the correct SAML attributes"
