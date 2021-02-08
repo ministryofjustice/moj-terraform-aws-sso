@@ -48,8 +48,8 @@ resource "auth0_connection" "github_saml_connection" {
   options {
     client_id     = var.auth0_github_client_id
     client_secret = var.auth0_github_client_secret
-    # Scope definitions aren't supported, but these are the ones you need in Auth0
-    scopes = ["read:user", "read:org", "email"]
+    # These are the minimum scopes you need for a GitHub SAML connection and AWS SSO.
+    scopes = ["read_user", "read_org", "email", "profile"]
   }
 }
 
