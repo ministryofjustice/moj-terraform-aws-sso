@@ -1,5 +1,4 @@
 data "aws_iam_account_alias" "current" {}
-data "aws_caller_identity" "current" {}
 
 # Auth0: Client setup
 resource "auth0_client" "saml" {
