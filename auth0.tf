@@ -100,10 +100,3 @@ resource "auth0_rule" "saml_mappings" {
   enabled = true
   order   = 30
 }
-
-resource "auth0_rule" "update_jit_user" {
-  name    = "Update AWS SSO SCIM user with the correct groupings"
-  script  = file("${path.module}/auth0-rules/update-jit-user.js")
-  enabled = true
-  order   = 40
-}
