@@ -6,11 +6,13 @@ variable "auth0_tenant_domain" {
 variable "auth0_client_id" {
   description = "Auth0 client ID (from a Machine to Machine application)"
   type        = string
+  sensitive   = true
 }
 
 variable "auth0_client_secret" {
   description = "Auth0 client secret (from a Machine to Machine application)"
   type        = string
+  sensitive   = true
 }
 
 variable "auth0_debug" {
@@ -22,11 +24,13 @@ variable "auth0_debug" {
 variable "auth0_github_client_id" {
   description = "Auth0: GitHub client ID"
   type        = string
+  sensitive   = true
 }
 
 variable "auth0_github_client_secret" {
   description = "Auth0: GitHub client secret"
   type        = string
+  sensitive   = true
 }
 
 variable "auth0_github_allowed_orgs" {
@@ -42,11 +46,13 @@ variable "auth0_allowed_domains" {
 variable "auth0_aws_sso_acs_url" {
   description = "AWS SSO: ACS URL"
   type        = string
+  sensitive   = true
 }
 
 variable "auth0_aws_sso_issuer_url" {
   description = "AWS SSO: Issuer URL"
   type        = string
+  sensitive   = true
 }
 
 variable "auth0_rule_enable_email_address_check" {
@@ -62,9 +68,11 @@ variable "sso_aws_region" {
 variable "sso_scim_token" {
   type        = string
   description = "AWS SSO SCIM token. Generated and shown only once when you turn on AWS SSO automatic SCIM provisioning"
+  sensitive   = true
 }
 
 variable "sso_tenant_id" {
   type        = string
   description = "AWS SSO tenant ID. Available from the Automatic provisioning section in AWS SSO"
+  sensitive   = true
 }
