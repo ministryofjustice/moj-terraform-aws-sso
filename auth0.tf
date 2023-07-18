@@ -43,7 +43,6 @@ resource "auth0_client" "saml" {
 resource "auth0_connection" "github_saml_connection" {
   name            = "GitHub"
   strategy        = "github"
-  enabled_clients = [auth0_client.saml.id]
   options {
     client_id     = var.auth0_github_client_id
     client_secret = var.auth0_github_client_secret
