@@ -41,9 +41,8 @@ resource "auth0_client" "saml" {
 
 # # Auth0: Connection setup
 resource "auth0_connection" "github_saml_connection" {
-  name            = "GitHub"
-  strategy        = "github"
-  enabled_clients = [auth0_client.saml.id]
+  name     = "GitHub"
+  strategy = "github"
   options {
     client_id     = var.auth0_github_client_id
     client_secret = var.auth0_github_client_secret
