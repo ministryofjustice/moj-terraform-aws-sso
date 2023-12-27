@@ -54,25 +54,3 @@ variable "auth0_aws_sso_issuer_url" {
   type        = string
   sensitive   = true
 }
-
-variable "auth0_rule_enable_email_address_check" {
-  type        = bool
-  description = "Whether to enable the email address check rule in Auth0"
-  default     = false
-}
-
-variable "sso_aws_region" {
-  type        = string
-  description = "Region that AWS SSO is configured in (required for the SCIM URL)"
-}
-variable "sso_scim_token" {
-  type        = string
-  description = "AWS SSO SCIM token. Generated and shown only once when you turn on AWS SSO automatic SCIM provisioning"
-  sensitive   = true
-}
-
-variable "sso_tenant_id" {
-  type        = string
-  description = "AWS SSO tenant ID. Available from the Automatic provisioning section in AWS SSO"
-  sensitive   = true
-}
