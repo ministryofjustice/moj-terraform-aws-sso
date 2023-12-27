@@ -16,11 +16,6 @@ resource "auth0_client" "saml" {
       destination = var.auth0_aws_sso_acs_url
       recipient   = var.auth0_aws_sso_acs_url
 
-      mappings = {
-        email = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-        name  = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-      }
-
       create_upn_claim                   = false
       passthrough_claims_with_no_mapping = false
       map_unknown_claims_as_is           = false
@@ -29,6 +24,7 @@ resource "auth0_client" "saml" {
       name_identifier_probes = [
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
       ]
+
       signature_algorithm           = "rsa-sha1"
       digest_algorithm              = "sha1"
       lifetime_in_seconds           = 3600
@@ -39,7 +35,7 @@ resource "auth0_client" "saml" {
   }
 }
 
-# # Auth0: Connection setup
+# Auth0: Connection configuration
 resource "auth0_connection" "github_saml_connection" {
   name     = "GitHub"
   strategy = "github"
@@ -93,9 +89,29 @@ resource "auth0_rule" "allow_email_addresses" {
   order   = 20
 }
 
-resource "auth0_rule" "saml_mappings" {
+# Auth0 actions
+resource "auth0_action" "saml_mappings" {
   name    = "Map user data to the correct SAML attributes"
-  script  = file("${path.module}/auth0-rules/saml-mappings.js")
-  enabled = true
-  order   = 30
+  runtime = "node18" # currently doesn't support node20
+  deploy  = true
+  code    = file("${path.module}/auth0-actions/saml-mappings.js")
+
+  supported_triggers {
+    id      = "post-login"
+    version = "v3"
+  }
+
+  secrets {
+    name  = "ALLOWED_DOMAINS"
+    value = jsonencode(var.auth0_allowed_domains)
+  }
+}
+
+resource "auth0_trigger_actions" "flow" {
+  trigger = "post-login"
+
+  actions {
+    id           = auth0_action.saml_mappings.id
+    display_name = auth0_action.saml_mappings.name
+  }
 }
