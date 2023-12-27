@@ -54,7 +54,12 @@ resource "auth0_client" "idp_token" {
 resource "auth0_client_grant" "idp_grant" {
   client_id = auth0_client.idp_token.id
   audience  = "https://${var.auth0_tenant_domain}/api/v2/"
-  scope     = ["read:user_idp_tokens"]
+  scopes    = ["read:user_idp_tokens"]
+}
+
+# Get client secret
+data "auth0_client" "idp_token" {
+  client_id = auth0_client.idp_token.client_id
 }
 
 # Auth0: Connection configuration
@@ -88,7 +93,7 @@ resource "auth0_action" "allow_github_organisations" {
 
   secrets {
     name  = "AUTH0_MANAGEMENT_CLIENT_SECRET"
-    value = auth0_client.idp_token.client_secret
+    value = data.auth0_client.idp_token.client_secret
   }
 
   secrets {
