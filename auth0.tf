@@ -35,6 +35,28 @@ resource "auth0_client" "saml" {
   }
 }
 
+# Auth0: Management machine-to-machine client (for retrieving access tokens from the IdP)
+resource "auth0_client" "idp_token" {
+  name           = "Management API: Auth0"
+  description    = "Machine-to-machine client for accessing IdP access tokens for validation in Auth0 Actions"
+  logo_uri       = "https://ministryofjustice.github.io/assets/moj-crest.png"
+  app_type       = "non_interactive"
+  is_first_party = true
+
+  grant_types = ["client_credentials"]
+
+  jwt_configuration {
+    alg                 = "RS256"
+    lifetime_in_seconds = "36000"
+  }
+}
+
+resource "auth0_client_grant" "idp_grant" {
+  client_id = auth0_client.idp_token.id
+  audience  = "https://${var.auth0_tenant_domain}/api/v2/"
+  scope     = ["read:user_idp_tokens"]
+}
+
 # Auth0: Connection configuration
 resource "auth0_connection" "github_saml_connection" {
   name     = "GitHub"
@@ -47,15 +69,49 @@ resource "auth0_connection" "github_saml_connection" {
   }
 }
 
-# Auth0 Rules: Attach rules from this repository
-resource "auth0_rule" "allow_github_organisations" {
+# Auth0 actions
+resource "auth0_action" "allow_github_organisations" {
   name    = "Allow specific GitHub Organisations"
-  script  = file("${path.module}/auth0-rules/allow-github-organisations.js")
-  enabled = true
-  order   = 10
+  runtime = "node18"
+  deploy  = true
+  code    = file("${path.module}/auth0-actions/allow-github-organisations.js")
+
+  supported_triggers {
+    id      = "post-login"
+    version = "v3"
+  }
+
+  secrets {
+    name  = "AUTH0_MANAGEMENT_CLIENT_ID"
+    value = auth0_client.idp_token.client_id
+  }
+
+  secrets {
+    name  = "AUTH0_MANAGEMENT_CLIENT_SECRET"
+    value = auth0_client.idp_token.client_secret
+  }
+
+  secrets {
+    name  = "AUTH0_TENANT_DOMAIN"
+    value = var.auth0_tenant_domain
+  }
+
+  secrets {
+    name  = "ALLOWED_ORGANISATIONS"
+    value = jsonencode(var.auth0_github_allowed_orgs)
+  }
+
+  dependencies {
+    name    = "@octokit/rest"
+    version = "20.0.2"
+  }
+
+  dependencies {
+    name    = "auth0"
+    version = "4.2.0"
+  }
 }
 
-# Auth0 actions
 resource "auth0_action" "saml_mappings" {
   name    = "Map user data to the correct SAML attributes"
   runtime = "node18" # currently doesn't support node20
@@ -75,6 +131,11 @@ resource "auth0_action" "saml_mappings" {
 
 resource "auth0_trigger_actions" "flow" {
   trigger = "post-login"
+
+  actions {
+    id           = auth0_action.allow_github_organisations.id
+    display_name = auth0_action.allow_github_organisations.name
+  }
 
   actions {
     id           = auth0_action.saml_mappings.id
