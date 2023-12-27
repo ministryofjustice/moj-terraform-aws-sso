@@ -47,46 +47,12 @@ resource "auth0_connection" "github_saml_connection" {
   }
 }
 
-# Auth0 Rules: Set the configuration variables,
-# which are accessible in Auth0 rules
-resource "auth0_rule_config" "github_allowed_organisations" {
-  key   = "ALLOWED_ORGANISATIONS"
-  value = jsonencode(var.auth0_github_allowed_orgs)
-}
-
-resource "auth0_rule_config" "github_allowed_domains" {
-  key   = "ALLOWED_DOMAINS"
-  value = jsonencode(var.auth0_allowed_domains)
-}
-
-resource "auth0_rule_config" "sso_aws_region" {
-  key   = "SSO_REGION"
-  value = jsonencode(var.sso_aws_region)
-}
-
-resource "auth0_rule_config" "sso_scim_token" {
-  key   = "SSO_SCIM_TOKEN"
-  value = jsonencode(var.sso_scim_token)
-}
-
-resource "auth0_rule_config" "sso_tenant_id" {
-  key   = "SSO_TENANT_ID"
-  value = jsonencode(var.sso_tenant_id)
-}
-
 # Auth0 Rules: Attach rules from this repository
 resource "auth0_rule" "allow_github_organisations" {
   name    = "Allow specific GitHub Organisations"
   script  = file("${path.module}/auth0-rules/allow-github-organisations.js")
   enabled = true
   order   = 10
-}
-
-resource "auth0_rule" "allow_email_addresses" {
-  name    = "Allow specific email addresses attached to a GitHub user"
-  script  = file("${path.module}/auth0-rules/allow-email-addresses.js")
-  enabled = var.auth0_rule_enable_email_address_check
-  order   = 20
 }
 
 # Auth0 actions
