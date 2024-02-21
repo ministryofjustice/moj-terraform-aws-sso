@@ -76,10 +76,10 @@ resource "auth0_connection" "github_saml_connection" {
 
 # Auth0 actions
 resource "auth0_action" "allow_github_organisations" {
-  name    = "Allow specific GitHub Organisations"
+  name    = "Allow specific GitHub Organisations and map SAML attributes"
   runtime = "node18"
   deploy  = true
-  code    = file("${path.module}/auth0-actions/allow-github-organisations.js")
+  code    = file("${path.module}/auth0-actions/allow-github-organisations-and-map-saml.js")
 
   supported_triggers {
     id      = "post-login"
@@ -102,6 +102,11 @@ resource "auth0_action" "allow_github_organisations" {
   }
 
   secrets {
+    name  = "ALLOWED_DOMAINS"
+    value = jsonencode(var.auth0_allowed_domains)
+  }
+
+  secrets {
     name  = "ALLOWED_ORGANISATIONS"
     value = jsonencode(var.auth0_github_allowed_orgs)
   }
@@ -117,33 +122,11 @@ resource "auth0_action" "allow_github_organisations" {
   }
 }
 
-resource "auth0_action" "saml_mappings" {
-  name    = "Map user data to the correct SAML attributes"
-  runtime = "node18" # currently doesn't support node20
-  deploy  = true
-  code    = file("${path.module}/auth0-actions/saml-mappings.js")
-
-  supported_triggers {
-    id      = "post-login"
-    version = "v3"
-  }
-
-  secrets {
-    name  = "ALLOWED_DOMAINS"
-    value = jsonencode(var.auth0_allowed_domains)
-  }
-}
-
 resource "auth0_trigger_actions" "flow" {
   trigger = "post-login"
 
   actions {
     id           = auth0_action.allow_github_organisations.id
     display_name = auth0_action.allow_github_organisations.name
-  }
-
-  actions {
-    id           = auth0_action.saml_mappings.id
-    display_name = auth0_action.saml_mappings.name
   }
 }
