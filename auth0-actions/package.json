@@ -1,0 +1,17 @@
+{
+  "name": "auth0-actions",
+  "description": "Used for testing Auth0 actions deployed by the Terraform Module. Production dependencies should reflect the version used in the Terraform module.",
+  "engines": {
+    "node": ">=18.0.0 <19.0.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@octokit/rest": "20.0.2",
+    "auth0": "4.2.0"
+  },
+  "devDependencies": {
+    "jest": "29.7.0"
+  }
+}
