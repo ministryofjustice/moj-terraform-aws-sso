@@ -59,8 +59,8 @@ describe('onExecutePostLogin', () => {
 
     expect(mockApi.access.deny).not.toHaveBeenCalled()
     expect(mockApi.samlResponse.setAttribute.mock.calls).toEqual([
-      ['https://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', 'test-user@example.com'],
-      ['https://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', 'test-user@example.com'],
+      ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', 'test-user@example.com'],
+      ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', 'test-user@example.com'],
       ['https://aws.amazon.com/SAML/Attributes/PrincipalTag:github_team', 'test-team-1,test-team-2'],
     ])
   })

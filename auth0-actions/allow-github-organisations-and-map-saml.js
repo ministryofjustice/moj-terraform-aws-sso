@@ -46,8 +46,8 @@ exports.onExecutePostLogin = async (event, api) => {
         // AWS requires the SAML nameID format to be an email address, which must
         // exactly match an existing user in AWS SSO:
         // https://docs.aws.amazon.com/singlesignon/latest/userguide/troubleshooting.html
-        api.samlResponse.setAttribute('https://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', `${event.user.nickname}${allowedDomain}`)
-        api.samlResponse.setAttribute('https://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', `${event.user.nickname}${allowedDomain}`)
+        api.samlResponse.setAttribute('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', `${event.user.nickname}${allowedDomain}`)
+        api.samlResponse.setAttribute('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', `${event.user.nickname}${allowedDomain}`)
 
         // Set SAML attribute for the user's GitHub team memberships
         const userTeamsResponse = await octokit.request('GET /user/teams').catch(error => api.access.deny(`Error retrieving teams from GitHub: ${error}`))
