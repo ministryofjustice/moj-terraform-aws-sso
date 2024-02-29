@@ -84,14 +84,14 @@ resource "auth0_connection" "azure_entraid_connection" {
     client_secret = var.auth0_azure_entraid_client_secret
     app_id        = auth0_client.saml.id
     domain        = var.auth0_azure_entraid_domain
-  
+
     waad_protocol          = "openid-connect"
     max_groups_to_retrieve = 50
     api_enable_users       = false
     scopes = [
       "basic_profile",
       "ext_groups",
-      
+
     ]
     set_user_root_attributes               = "on_each_login"
     should_trust_email_verified_connection = "always_set_emails_as_verified"

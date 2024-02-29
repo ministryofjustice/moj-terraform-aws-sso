@@ -57,19 +57,19 @@ variable "auth0_aws_sso_issuer_url" {
 
 variable "auth0_azure_entraid_client_id" {
   description = "Client id for the azures application"
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
 variable "auth0_azure_entraid_client_secret" {
   description = "Client secret for the azures application"
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
 variable "auth0_azure_entraid_domain" {
   description = "Azures application domain name"
-  type = string
-  sensitive = true
-  
+  type        = string
+  sensitive   = true
+
 }
