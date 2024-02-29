@@ -53,7 +53,7 @@ exports.onExecutePostLogin = async (event, api) => {
         const userTeamsResponse = await octokit.request('GET /user/teams').catch(error => api.access.deny(`Error retrieving teams from GitHub: ${error}`))
         const userTeamSlugs = userTeamsResponse.data.map(team => team.slug)
         console.log("Joined the following teams:" `${userTeamSlugs.join(',')}`)
-        api.samlResponse.setAttribute('https://aws.amazon.com/SAML/Attributes/PrincipalTag:github_team', `${userTeamSlugs.join(',')}`)
+        api.samlResponse.setAttribute('https://aws.amazon.com/SAML/Attributes/AccessControl:github_team', `${userTeamSlugs.join(',')}`)
 
         return // this empty return is required by auth0 to continue to the next action
       }
