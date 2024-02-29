@@ -75,7 +75,8 @@ resource "auth0_connection" "github_saml_connection" {
 }
 
 resource "auth0_connection" "azure_entraid_connection" {
-  name           = "Azure EntraID"
+  display_name   = "Azure EntraID PoC - Do not use"
+  name           = "azure-entraid"
   strategy       = "waad"
   show_as_button = true
   options {
