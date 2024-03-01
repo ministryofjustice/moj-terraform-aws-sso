@@ -61,7 +61,7 @@ describe('onExecutePostLogin', () => {
     expect(mockApi.samlResponse.setAttribute.mock.calls).toEqual([
       ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', 'test-user@example.com'],
       ['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', 'test-user@example.com'],
-      ['https://aws.amazon.com/SAML/Attributes/PrincipalTag:github_team', 'test-team-1,test-team-2'],
+      ['https://aws.amazon.com/SAML/Attributes/AccessControl:github_team', 'test-team-1,test-team-2'],
     ])
   })
 
