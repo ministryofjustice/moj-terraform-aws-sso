@@ -50,9 +50,12 @@ exports.onExecutePostLogin = async (event, api) => {
         api.samlResponse.setAttribute('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', `${event.user.nickname}${allowedDomain}`)
 
         // Set SAML attribute for the user's GitHub team memberships
+        // Ensure character limit stays inside documented constraint
         const userTeamsResponse = await octokit.request('GET /user/teams').catch(error => api.access.deny(`Error retrieving teams from GitHub: ${error}`))
-        const userTeamSlugs = userTeamsResponse.data.map(team => team.slug)
-        api.samlResponse.setAttribute('https://aws.amazon.com/SAML/Attributes/AccessControl:github_team', `${userTeamSlugs.join(',')}`)
+        const userTeamSlugs     = userTeamsResponse.data.map(team => team.slug)
+        const joinTeamSlugs     = userTeamSlugs.join(':')
+        const trimTeamSlugs     = joinTeamSlugs.slice(0, 256)
+        api.samlResponse.setAttribute('https://aws.amazon.com/SAML/Attributes/AccessControl:github_team', `${trimTeamSlugs}`)
 
         return // this empty return is required by auth0 to continue to the next action
       }
