@@ -19,6 +19,9 @@ module "sso" {
   auth0_allowed_domains      = "@example.com"
   auth0_aws_sso_acs_url      = "https://${region}.signin.aws.amazon.com/platform/saml/acs/${random_key}"
   auth0_aws_sso_issuer_url   = "https://${region}.signin.aws.amazon.com/platform/saml/${random_key}"
+  auth0_azure_entraid_client_id = ""
+  auth0_azure_entraid_client_secret = ""
+  auth0_azure_entraid_domain = "example.com"
 }
 ```
 
@@ -71,7 +74,11 @@ No modules.
 | <a name="input_auth0_github_client_id"></a> [auth0_github_client_id](#input_auth0_github_client_id)             | Auth0: GitHub client ID                                                               | `string`       | n/a     |   yes    |
 | <a name="input_auth0_github_client_secret"></a> [auth0_github_client_secret](#input_auth0_github_client_secret) | Auth0: GitHub client secret                                                           | `string`       | n/a     |   yes    |
 | <a name="input_auth0_tenant_domain"></a> [auth0_tenant_domain](#input_auth0_tenant_domain)                      | Auth0 tenant domain                                                                   | `string`       | n/a     |   yes    |
-
+| <a name="auth0_azure_entraid_client_id"></a> [auth0_azure_entraid_client_id](#input_auth0_azure_entraid_client_id)  | Client id for the azures
+application                                                              | `string`       | n/a     |   yes    |
+| <a name="auth0_azure_entraid_client_secret"></a> [auth0_azure_entraid_client_secret](#input_auth0_azure_entraid_client_secret)  | Client secret for the azures application                                                       | `string`       | n/a     |   yes    |
+| <a name="auth0_azure_entraid_domain"></a> [auth0_azure_entraid_domain](#input_auth0_azure_entraid_domain)        | Azures application domain
+name                                                                     | `string`       | n/a     |   yes    |
 ## Outputs
 
 No outputs.

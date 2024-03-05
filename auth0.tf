@@ -85,6 +85,7 @@ resource "auth0_connection" "azure_entraid_connection" {
     client_secret = var.auth0_azure_entraid_client_secret
     app_id        = auth0_client.saml.id
     domain        = var.auth0_azure_entraid_domain
+    tenant_domain = var.auth0_azure_entraid_domain
 
     waad_protocol          = "openid-connect"
     max_groups_to_retrieve = 50
