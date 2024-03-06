@@ -76,7 +76,7 @@ No modules.
 | <a name="input_auth0_tenant_domain"></a> [auth0_tenant_domain](#input_auth0_tenant_domain)                                     | Auth0 tenant domain                                                                   | `string`       | n/a     |   yes    |
 | <a name="auth0_azure_entraid_client_id"></a> [auth0_azure_entraid_client_id](#input_auth0_azure_entraid_client_id)             | Client id for the azures application                                                  | `string`       | n/a     |   yes    |
 | <a name="auth0_azure_entraid_client_secret"></a> [auth0_azure_entraid_client_secret](#input_auth0_azure_entraid_client_secret) | Client secret for the azures application                                              | `string`       | n/a     |   yes    |
-| <a name="auth0_azure_entraid_domain"></a> [auth0_azure_entraid_domain](#input_auth0_azure_entraid_domain)                      | Azures application domain name                                                     | `string`       | n/a            | yes     |
+| <a name="auth0_azure_entraid_domain"></a> [auth0_azure_entraid_domain](#input_auth0_azure_entraid_domain)                      | Azures application domain name                                                        | `string`       | n/a     |   yes    |
 
 ## Outputs
 
