@@ -41,7 +41,7 @@ describe('onExecutePostLogin', () => {
         ALLOWED_ORGANISATIONS: '["ministryofjustice"]',
         ALLOWED_DOMAINS: '["@example.com"]',
       },
-      connection: { strategy: 'github' },
+      connection: { strategy: 'github', name: '' },
       user: { identities: [{ provider: 'github' }], nickname: 'test-user' },
     }
     mockApi = {
@@ -74,10 +74,10 @@ describe('onExecutePostLogin', () => {
     expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
   })
 
-  test('access denied given event connection strategy is not `github`', async () => {
+  test('access denied given event connection strategy is not `github` or connection name is not `azure-entraid', async () => {
     mockEvent = {
       ...mockEvent,
-      connection: { strategy: 'NOT_GITHUB' },
+      connection: { strategy: 'NOT_GITHUB', name: 'NOT_ENTRA' },
     }
 
     await onExecutePostLogin(mockEvent, mockApi)
