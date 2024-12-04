@@ -24,7 +24,9 @@ async function getIdpAccessToken (clientId, clientSecret, tenantDomain, userId) 
 exports.onExecutePostLogin = async (event, api) => {
   const { AUTH0_MANAGEMENT_CLIENT_ID, AUTH0_MANAGEMENT_CLIENT_SECRET, AUTH0_TENANT_DOMAIN, ALLOWED_ORGANISATIONS } = event.secrets
   const allowedOrganisations = JSON.parse(ALLOWED_ORGANISATIONS)
-
+  if (event.connection.strategy.toLowerCase() === 'azure-entraid') {
+    return;
+  }
   if (event.connection.strategy.toLowerCase() === 'github') {
     const identity = event.user.identities.find(identity => identity.provider.toLowerCase() === 'github')
 
