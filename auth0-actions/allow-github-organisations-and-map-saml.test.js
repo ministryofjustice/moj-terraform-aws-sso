@@ -42,7 +42,7 @@ describe('onExecutePostLogin', () => {
         ALLOWED_DOMAINS: '["@example.com"]',
       },
       connection: { name: 'github' },
-      user: { identities: [{ provider: 'github' }], nickname: 'test-user' },
+      user: { identities: [{ connection: 'github' }], nickname: 'test-user' },
     }
     mockApi = {
       access: {
@@ -77,7 +77,7 @@ describe('onExecutePostLogin', () => {
   test('access denied given user does not have a GitHub identity', async () => {
     mockEvent = {
       ...mockEvent,
-      user: { identities: [{ provider: 'NOT_GITHUB' }], nickname: 'test-user' },
+      user: { identities: [{ connection: 'NOT_GITHUB' }], nickname: 'test-user' },
     }
 
     await onExecutePostLogin(mockEvent, mockApi)

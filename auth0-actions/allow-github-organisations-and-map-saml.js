@@ -1,7 +1,6 @@
 /*
   This rule checks if a user is:
-  - signing in with GitHub
-  - is part of an allowed organisation
+  - is part of an allowed organisation when signing in with GitHub
   If so, it will start processing the next rule in the list or authorise a users access.
   Otherwise, it will reject the user.
 */
@@ -31,7 +30,7 @@ exports.onExecutePostLogin = async (event, api) => {
     return  // This action only applies when the user authenticates with the GitHub connection
   }
 
-  const identity = event.user.identities.find(identity => identity.provider.toLowerCase() === 'github')
+  const identity = event.user.identities.find(identity => identity.connection.toLowerCase() === githubConnectionName)
   if (!identity) {
     return api.access.deny('User does not have a GitHub identity')
   }
@@ -50,24 +49,21 @@ exports.onExecutePostLogin = async (event, api) => {
     return api.access.deny('User is not part of an allowed organisation')
   }
 
+  const allowedDomain = JSON.parse(event.secrets.ALLOWED_DOMAINS)
 
-  if (authorised) {
-    const allowedDomain = JSON.parse(event.secrets.ALLOWED_DOMAINS)
+  // AWS requires the SAML nameID format to be an email address, which must
+  // exactly match an existing user in AWS SSO:
+  // https://docs.aws.amazon.com/singlesignon/latest/userguide/troubleshooting.html
+  api.samlResponse.setAttribute('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', `${event.user.nickname}${allowedDomain}`)
+  api.samlResponse.setAttribute('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', `${event.user.nickname}${allowedDomain}`)
 
-    // AWS requires the SAML nameID format to be an email address, which must
-    // exactly match an existing user in AWS SSO:
-    // https://docs.aws.amazon.com/singlesignon/latest/userguide/troubleshooting.html
-    api.samlResponse.setAttribute('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress', `${event.user.nickname}${allowedDomain}`)
-    api.samlResponse.setAttribute('http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name', `${event.user.nickname}${allowedDomain}`)
+  // Set SAML attribute for the user's GitHub team memberships
+  // Ensure character limit stays inside documented constraint
+  const userTeamsResponse = await octokit.request('GET /user/teams').catch(error => api.access.deny(`Error retrieving teams from GitHub: ${error}`))
+  const userTeamSlugs = userTeamsResponse.data.map(team => team.slug)
+  const joinTeamSlugs = userTeamSlugs.join(':')
+  const trimTeamSlugs = joinTeamSlugs.slice(0, 256)
+  api.samlResponse.setAttribute('https://aws.amazon.com/SAML/Attributes/AccessControl:github_team', `${trimTeamSlugs}`)
 
-    // Set SAML attribute for the user's GitHub team memberships
-    // Ensure character limit stays inside documented constraint
-    const userTeamsResponse = await octokit.request('GET /user/teams').catch(error => api.access.deny(`Error retrieving teams from GitHub: ${error}`))
-    const userTeamSlugs = userTeamsResponse.data.map(team => team.slug)
-    const joinTeamSlugs = userTeamSlugs.join(':')
-    const trimTeamSlugs = joinTeamSlugs.slice(0, 256)
-    api.samlResponse.setAttribute('https://aws.amazon.com/SAML/Attributes/AccessControl:github_team', `${trimTeamSlugs}`)
-
-    return // this empty return is required by auth0 to continue to the next action
-  }
+  return // this empty return is required by auth0 to continue to the next action
 }
