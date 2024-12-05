@@ -44,7 +44,7 @@ exports.onExecutePostLogin = async (event, api) => {
   const userOrganisations = await octokit.request('GET /user/orgs').catch(error => api.access.deny(`Error retrieving orgs from GitHub: ${error}`))
 
   // Check if a user is part of an allowed organisation
-  const authorised = userOrganisations.data.map(organisation => organisation.login).some(organisation => allowedOrganisations.includes(organisation))
+  const authorised = userOrganisations?.data?.map(organisation => organisation.login).some(organisation => allowedOrganisations.includes(organisation))
   if (!authorised) {
     return api.access.deny('User is not part of an allowed organisation')
   }
