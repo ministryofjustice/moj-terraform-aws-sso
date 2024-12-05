@@ -70,11 +70,11 @@ describe('onExecutePostLogin', () => {
 
     await onExecutePostLogin(mockEvent, mockApi)
 
-    expect(mockApi.access.deny).toHaveBeenCalledWith('Access denied.')
+    expect(mockApi.access.deny).toHaveBeenCalledWith('User is not part of an allowed organisation')
     expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
   })
 
-  test('access denied given user identity provider is not `github`', async () => {
+  test('access denied given user does not have a GitHub identity', async () => {
     mockEvent = {
       ...mockEvent,
       user: { identities: [{ provider: 'NOT_GITHUB' }], nickname: 'test-user' },
@@ -82,7 +82,7 @@ describe('onExecutePostLogin', () => {
 
     await onExecutePostLogin(mockEvent, mockApi)
 
-    expect(mockApi.access.deny).toHaveBeenCalledWith('Access denied.')
+    expect(mockApi.access.deny).toHaveBeenCalledWith('User does not have a GitHub identity')
     expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
   })
 })
