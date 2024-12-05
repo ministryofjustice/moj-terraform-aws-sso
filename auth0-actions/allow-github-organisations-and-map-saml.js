@@ -8,7 +8,7 @@
 const { Octokit } = require('@octokit/rest')
 const { ManagementClient } = require('auth0')
 
-async function getIdpAccessToken (clientId, clientSecret, tenantDomain, userId) {
+async function getIdpAccessToken(clientId, clientSecret, tenantDomain, userId) {
   const management = new ManagementClient({
     domain: tenantDomain,
     clientId,
@@ -16,7 +16,7 @@ async function getIdpAccessToken (clientId, clientSecret, tenantDomain, userId) 
   })
 
   const response = await management.users.get({ id: userId })
-  return response.data.identities.find(function (identity) {
+  return response.data.identities.find(function(identity) {
     return identity.provider.toLowerCase() === 'github'
   })
 }
@@ -24,10 +24,14 @@ async function getIdpAccessToken (clientId, clientSecret, tenantDomain, userId) 
 exports.onExecutePostLogin = async (event, api) => {
   const { AUTH0_MANAGEMENT_CLIENT_ID, AUTH0_MANAGEMENT_CLIENT_SECRET, AUTH0_TENANT_DOMAIN, ALLOWED_ORGANISATIONS } = event.secrets
   const allowedOrganisations = JSON.parse(ALLOWED_ORGANISATIONS)
-  if (event.connection.strategy.toLowerCase() === 'azure-entraid') {
-    return;
+  const connectionName = event.connection.name.toLowerCase()
+  const githubConnectionName = 'github'
+
+  if (connectionName !== githubConnectionName) {
+    return  // This action only applies when the user authenticates with GitHub
   }
-  if (event.connection.strategy.toLowerCase() === 'github') {
+
+  if (connectionName === githubConnectionName) {
     const identity = event.user.identities.find(identity => identity.provider.toLowerCase() === 'github')
 
     if (identity) {
@@ -54,9 +58,9 @@ exports.onExecutePostLogin = async (event, api) => {
         // Set SAML attribute for the user's GitHub team memberships
         // Ensure character limit stays inside documented constraint
         const userTeamsResponse = await octokit.request('GET /user/teams').catch(error => api.access.deny(`Error retrieving teams from GitHub: ${error}`))
-        const userTeamSlugs     = userTeamsResponse.data.map(team => team.slug)
-        const joinTeamSlugs     = userTeamSlugs.join(':')
-        const trimTeamSlugs     = joinTeamSlugs.slice(0, 256)
+        const userTeamSlugs = userTeamsResponse.data.map(team => team.slug)
+        const joinTeamSlugs = userTeamSlugs.join(':')
+        const trimTeamSlugs = joinTeamSlugs.slice(0, 256)
         api.samlResponse.setAttribute('https://aws.amazon.com/SAML/Attributes/AccessControl:github_team', `${trimTeamSlugs}`)
 
         return // this empty return is required by auth0 to continue to the next action
