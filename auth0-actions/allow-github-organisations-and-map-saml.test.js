@@ -41,8 +41,8 @@ describe('onExecutePostLogin', () => {
         ALLOWED_ORGANISATIONS: '["ministryofjustice"]',
         ALLOWED_DOMAINS: '["@example.com"]',
       },
-      connection: { strategy: 'github' },
-      user: { identities: [{ provider: 'github' }], nickname: 'test-user' },
+      connection: { name: 'github' },
+      user: { identities: [{ connection: 'github' }], nickname: 'test-user' },
     }
     mockApi = {
       access: {
@@ -70,31 +70,19 @@ describe('onExecutePostLogin', () => {
 
     await onExecutePostLogin(mockEvent, mockApi)
 
-    expect(mockApi.access.deny).toHaveBeenCalledWith('Access denied.')
+    expect(mockApi.access.deny).toHaveBeenCalledWith('User is not part of an allowed organisation')
     expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
   })
 
-  test('access denied given event connection strategy is not `github`', async () => {
+  test('access denied given user does not have a GitHub identity', async () => {
     mockEvent = {
       ...mockEvent,
-      connection: { strategy: 'NOT_GITHUB' },
+      user: { identities: [{ connection: 'NOT_GITHUB' }], nickname: 'test-user' },
     }
 
     await onExecutePostLogin(mockEvent, mockApi)
 
-    expect(mockApi.access.deny).toHaveBeenCalledWith('Access denied.')
-    expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
-  })
-
-  test('access denied given user identity provider is not `github`', async () => {
-    mockEvent = {
-      ...mockEvent,
-      user: { identities: [{ provider: 'NOT_GITHUB' }], nickname: 'test-user' },
-    }
-
-    await onExecutePostLogin(mockEvent, mockApi)
-
-    expect(mockApi.access.deny).toHaveBeenCalledWith('Access denied.')
+    expect(mockApi.access.deny).toHaveBeenCalledWith('User does not have a GitHub identity')
     expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
   })
 })
