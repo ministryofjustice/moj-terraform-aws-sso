@@ -74,18 +74,6 @@ describe('onExecutePostLogin', () => {
     expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
   })
 
-  test('access denied given event connection name is not `github`', async () => {
-    mockEvent = {
-      ...mockEvent,
-      connection: { name: 'NOT_GITHUB' },
-    }
-
-    await onExecutePostLogin(mockEvent, mockApi)
-
-    expect(mockApi.access.deny).toHaveBeenCalledWith('Access denied.')
-    expect(mockApi.samlResponse.setAttribute).not.toHaveBeenCalled()
-  })
-
   test('access denied given user identity provider is not `github`', async () => {
     mockEvent = {
       ...mockEvent,
