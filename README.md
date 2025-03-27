@@ -1,6 +1,6 @@
 # moj-terraform-aws-sso
 
-[![repo standards badge](https://github-community.cloud-platform.service.justice.gov.uk/repository-standards/api/moj-terraform-aws-sso/badge)](https://github-community.cloud-platform.service.justice.gov.uk/repository-standards/moj-terraform-aws-sso)
+[![repo standards badge](https://github-community.service.justice.gov.uk/repository-standards/api/moj-terraform-aws-sso/badge)](https://github-community.service.justice.gov.uk/repository-standards/moj-terraform-aws-sso)
 
 This Terraform module creates an Auth0 application and associated integrations to enable AWS SSO.
 
