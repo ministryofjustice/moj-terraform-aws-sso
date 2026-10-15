@@ -43,9 +43,10 @@ variable "auth0_allowed_domains" {
   type        = string
 }
 
-variable "auth0_aws_sso_acs_url" {
-  description = "AWS SSO: ACS URL"
-  type        = string
+variable "auth0_aws_sso_acs_urls" {
+  description = "AWS IAM Identity Center allowed ACS URLs"
+  type        = list(string)
+  default     = []
   sensitive   = true
 }
 
