@@ -44,10 +44,14 @@ variable "auth0_allowed_domains" {
 }
 
 variable "auth0_aws_sso_acs_urls" {
-  description = "AWS IAM Identity Center allowed ACS URLs"
+  description = "AWS IAM Identity Center allowed ACS URLs, including the alternative IPv4-only and dual-stack endpoints"
   type        = list(string)
-  default     = []
   sensitive   = true
+
+  validation {
+    condition     = var.auth0_aws_sso_acs_urls == null ? false : length(var.auth0_aws_sso_acs_urls) > 0
+    error_message = "At least one AWS IAM Identity Center ACS URL must be supplied."
+  }
 }
 
 variable "auth0_aws_sso_issuer_url" {

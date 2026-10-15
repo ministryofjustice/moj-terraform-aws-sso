@@ -4,7 +4,7 @@ data "aws_iam_account_alias" "current" {}
 resource "auth0_client" "saml" {
   name               = "AWS SSO: ${data.aws_iam_account_alias.current.account_alias}"
   description        = "SAML provider for the ${data.aws_iam_account_alias.current.account_alias} account"
-  callbacks          =  var.auth0_aws_sso_acs_urls
+  callbacks          = var.auth0_aws_sso_acs_urls
   logo_uri           = "https://ministryofjustice.github.io/assets/moj-crest.png"
   app_type           = "regular_web"
   initiate_login_uri = "https://moj.awsapps.com/start"
@@ -12,7 +12,7 @@ resource "auth0_client" "saml" {
 
   addons {
     samlp {
-      audience    = var.auth0_aws_sso_issuer_url
+      audience = var.auth0_aws_sso_issuer_url
 
       create_upn_claim                   = false
       passthrough_claims_with_no_mapping = false
