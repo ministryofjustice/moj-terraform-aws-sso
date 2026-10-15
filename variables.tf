@@ -54,12 +54,6 @@ variable "auth0_aws_sso_acs_urls" {
   }
 }
 
-variable "auth0_aws_sso_issuer_url" {
-  description = "AWS SSO: Issuer URL"
-  type        = string
-  sensitive   = true
-}
-
 variable "auth0_azure_entraid_client_id" {
   description = "Client id for the azures application"
   type        = string

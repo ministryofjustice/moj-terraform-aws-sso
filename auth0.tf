@@ -12,8 +12,6 @@ resource "auth0_client" "saml" {
 
   addons {
     samlp {
-      audience = var.auth0_aws_sso_issuer_url
-
       create_upn_claim                   = false
       passthrough_claims_with_no_mapping = false
       map_unknown_claims_as_is           = false
