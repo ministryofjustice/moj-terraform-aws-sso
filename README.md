@@ -27,6 +27,24 @@ module "sso" {
 }
 ```
 
+### Optional: GitHub sign-in through Entra ID
+
+`github_via_entraid` adds a second Entra ID connection (reusing the existing Entra ID
+application and credentials) labelled `github_via_entraid_display_name`. Users who sign in
+with it authenticate with Entra ID. The post-login action then looks up the GitHub account
+linked to that identity through the organisation's SAML SSO (by user ID, then by the SAML
+identity's email) and issues the same AWS identity and `github_team` attribute that a GitHub
+sign-in issues. It denies the sign-in if there is not exactly one linked account, or if GitHub
+cannot be reached within 8 seconds. It requires the GitHub App inputs: a GitHub App with
+**Members: read** on the organisation (`github_app_id`, `github_app_installation_id`,
+`github_app_private_key`).
+
+- `off` (default): no connection.
+- `created`: the connection exists but is not offered to the AWS SSO application.
+- `enabled`: the connection is offered to the AWS SSO application.
+
+The existing GitHub and Entra ID connections are not changed.
+
 Supply the ACS URLs shown in the IAM Identity Center console under **Settings >
 Identity source > Actions > Manage authentication**. Include both the existing
 alternative IPv4-only endpoint and the dual-stack endpoint to support sign-in
@@ -57,7 +75,7 @@ removed because Auth0 now derives the audience from the incoming SAMLRequest.
 
 | Name                                                                     | Version  |
 | ------------------------------------------------------------------------ | -------- |
-| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.0.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement_terraform) | >= 1.2.0 |
 | <a name="requirement_auth0"></a> [auth0](#requirement_auth0)             | >= 1.0.0 |
 | <a name="requirement_aws"></a> [aws](#requirement_aws)                   | >= 5.0.0 |
 
@@ -102,6 +120,11 @@ No modules.
 | <a name="auth0_azure_entraid_client_id"></a> [auth0_azure_entraid_client_id](#input_auth0_azure_entraid_client_id)             | Client id for the azures application                                                  | `string`       | n/a     |   yes    |
 | <a name="auth0_azure_entraid_client_secret"></a> [auth0_azure_entraid_client_secret](#input_auth0_azure_entraid_client_secret) | Client secret for the azures application                                              | `string`       | n/a     |   yes    |
 | <a name="auth0_azure_entraid_domain"></a> [auth0_azure_entraid_domain](#input_auth0_azure_entraid_domain)                      | Azures application domain name                                                        | `string`       | n/a     |   yes    |
+| <a name="input_github_app_id"></a> [github_app_id](#input_github_app_id) | GitHub App ID (required unless `github_via_entraid` is `off`) | `string` | `""` | no |
+| <a name="input_github_app_installation_id"></a> [github_app_installation_id](#input_github_app_installation_id) | GitHub App installation ID (required unless `github_via_entraid` is `off`) | `string` | `""` | no |
+| <a name="input_github_app_private_key"></a> [github_app_private_key](#input_github_app_private_key) | GitHub App private key, PEM (required unless `github_via_entraid` is `off`) | `string` | `""` | no |
+| <a name="input_github_via_entraid"></a> [github_via_entraid](#input_github_via_entraid) | Entra ID connection presented as GitHub sign-in: `off`, `created` or `enabled` | `string` | `"off"` | no |
+| <a name="input_github_via_entraid_display_name"></a> [github_via_entraid_display_name](#input_github_via_entraid_display_name) | Button label for the GitHub-via-Entra-ID connection | `string` | `"GitHub (Microsoft sign-in)"` | no |
 
 ## Outputs
 
