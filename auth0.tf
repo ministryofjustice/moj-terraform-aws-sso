@@ -133,9 +133,48 @@ resource "auth0_action" "allow_github_organisations" {
     value = jsonencode(var.auth0_github_allowed_orgs)
   }
 
+  secrets {
+    name  = "ENTRA_CONNECTION_NAME"
+    value = auth0_connection.azure_entraid_connection.name
+  }
+
+  secrets {
+    name  = "ENTRA_GITHUB_MAPPING"
+    value = var.entra_github_mapping
+  }
+
+  dynamic "secrets" {
+    for_each = var.entra_github_mapping == "off" ? [] : [1]
+    content {
+      name  = "GITHUB_APP_ID"
+      value = var.github_app_id
+    }
+  }
+
+  dynamic "secrets" {
+    for_each = var.entra_github_mapping == "off" ? [] : [1]
+    content {
+      name  = "GITHUB_APP_INSTALLATION_ID"
+      value = var.github_app_installation_id
+    }
+  }
+
+  dynamic "secrets" {
+    for_each = var.entra_github_mapping == "off" ? [] : [1]
+    content {
+      name  = "GITHUB_APP_PRIVATE_KEY"
+      value = var.github_app_private_key
+    }
+  }
+
   dependencies {
     name    = "@octokit/rest"
     version = "20.0.2"
+  }
+
+  dependencies {
+    name    = "@octokit/auth-app"
+    version = "6.1.4"
   }
 
   dependencies {

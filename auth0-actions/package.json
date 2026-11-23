@@ -8,6 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@octokit/auth-app": "6.1.4",
     "@octokit/rest": "20.0.2",
     "auth0": "4.2.0"
   },

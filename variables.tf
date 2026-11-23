@@ -72,3 +72,35 @@ variable "auth0_azure_entraid_domain" {
   sensitive   = true
 
 }
+
+variable "entra_github_mapping" {
+  description = "Look up the GitHub account linked through the organisation's SAML SSO on Entra ID sign-ins: off, or shadow (look up and log only; sign-ins are not changed)"
+  type        = string
+  default     = "off"
+
+  validation {
+    condition     = contains(["off", "shadow"], var.entra_github_mapping)
+    error_message = "entra_github_mapping must be one of: off, shadow."
+  }
+}
+
+variable "github_app_id" {
+  description = "GitHub App ID used to look up linked GitHub accounts and team memberships (required unless entra_github_mapping is off)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "github_app_installation_id" {
+  description = "GitHub App installation ID for the organisation (required unless entra_github_mapping is off)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "github_app_private_key" {
+  description = "GitHub App private key in PEM format (required unless entra_github_mapping is off)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}

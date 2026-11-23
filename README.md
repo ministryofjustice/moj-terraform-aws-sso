@@ -27,6 +27,21 @@ module "sso" {
 }
 ```
 
+### Optional: look up the linked GitHub account on Entra ID sign-ins
+
+Set `entra_github_mapping = "shadow"` and supply a GitHub App (`github_app_id`,
+`github_app_installation_id`, `github_app_private_key`) with **Members: read** on the
+organisation. On each Entra ID sign-in the post-login action then looks up the GitHub
+account linked to that identity through the organisation's SAML SSO, and that account's
+team memberships, and writes one summary line to the Auth0 action logs:
+
+```
+entra-github-mapping mode=shadow result=ok id_length=<n> matches=<0|1|2> teams=<n> ms=<n>
+```
+
+Shadow mode never denies a sign-in and never changes the SAML response. Lookups give up
+after 1.5 seconds. The default, `off`, makes no GitHub calls.
+
 Supply the ACS URLs shown in the IAM Identity Center console under **Settings >
 Identity source > Actions > Manage authentication**. Include both the existing
 alternative IPv4-only endpoint and the dual-stack endpoint to support sign-in
@@ -102,6 +117,10 @@ No modules.
 | <a name="auth0_azure_entraid_client_id"></a> [auth0_azure_entraid_client_id](#input_auth0_azure_entraid_client_id)             | Client id for the azures application                                                  | `string`       | n/a     |   yes    |
 | <a name="auth0_azure_entraid_client_secret"></a> [auth0_azure_entraid_client_secret](#input_auth0_azure_entraid_client_secret) | Client secret for the azures application                                              | `string`       | n/a     |   yes    |
 | <a name="auth0_azure_entraid_domain"></a> [auth0_azure_entraid_domain](#input_auth0_azure_entraid_domain)                      | Azures application domain name                                                        | `string`       | n/a     |   yes    |
+| <a name="input_entra_github_mapping"></a> [entra_github_mapping](#input_entra_github_mapping) | Look up the linked GitHub account on Entra ID sign-ins: `off` or `shadow` (log only) | `string` | `"off"` | no |
+| <a name="input_github_app_id"></a> [github_app_id](#input_github_app_id) | GitHub App ID (required unless `entra_github_mapping` is `off`) | `string` | `""` | no |
+| <a name="input_github_app_installation_id"></a> [github_app_installation_id](#input_github_app_installation_id) | GitHub App installation ID (required unless `entra_github_mapping` is `off`) | `string` | `""` | no |
+| <a name="input_github_app_private_key"></a> [github_app_private_key](#input_github_app_private_key) | GitHub App private key, PEM (required unless `entra_github_mapping` is `off`) | `string` | `""` | no |
 
 ## Outputs
 
