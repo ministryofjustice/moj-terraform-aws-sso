@@ -72,3 +72,42 @@ variable "auth0_azure_entraid_domain" {
   sensitive   = true
 
 }
+
+variable "github_app_id" {
+  description = "GitHub App ID used to look up linked GitHub accounts and team memberships (required unless github_via_entraid is off)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "github_app_installation_id" {
+  description = "GitHub App installation ID for the organisation (required unless github_via_entraid is off)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "github_app_private_key" {
+  description = "GitHub App private key in PEM format (required unless github_via_entraid is off)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "github_via_entraid" {
+  description = "Entra ID connection presented as GitHub sign-in, mapped to the linked GitHub account: off, created (connection exists but is not offered to the AWS SSO application) or enabled"
+  type        = string
+  default     = "off"
+
+  validation {
+    condition     = contains(["off", "created", "enabled"], var.github_via_entraid)
+    error_message = "github_via_entraid must be one of: off, created, enabled."
+  }
+}
+
+variable "github_via_entraid_display_name" {
+  description = "Button label for the GitHub-via-Entra-ID connection"
+  type        = string
+  default     = "GitHub (Microsoft sign-in)"
+}
+

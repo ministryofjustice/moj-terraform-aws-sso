@@ -96,6 +96,51 @@ resource "auth0_connection" "azure_entraid_connection" {
   }
 }
 
+# Auth0: Entra ID connection presented as GitHub sign-in. Users authenticate with Entra ID, and the
+# post-login action maps the GitHub account linked through the organisation's SAML SSO.
+resource "auth0_connection" "github_via_entraid_connection" {
+  count = var.github_via_entraid == "off" ? 0 : 1
+
+  display_name   = var.github_via_entraid_display_name
+  name           = "github-via-entraid"
+  strategy       = "waad"
+  show_as_button = true
+  options {
+    identity_api  = "microsoft-identity-platform-v2.0"
+    client_id     = var.auth0_azure_entraid_client_id
+    client_secret = var.auth0_azure_entraid_client_secret
+    app_id        = auth0_client.saml.id
+    domain        = var.auth0_azure_entraid_domain
+    tenant_domain = var.auth0_azure_entraid_domain
+
+    waad_protocol          = "openid-connect"
+    max_groups_to_retrieve = 50
+    api_enable_users       = false
+    scopes = [
+      "basic_profile",
+      "ext_groups",
+    ]
+    set_user_root_attributes               = "on_each_login"
+    should_trust_email_verified_connection = "always_set_emails_as_verified"
+  }
+}
+
+# Offer the connection to the AWS SSO application only when enabled. This manages this one
+# connection/application pair and leaves the existing connections' assignments untouched.
+resource "auth0_connection_client" "github_via_entraid_saml" {
+  count = var.github_via_entraid == "enabled" ? 1 : 0
+
+  connection_id = auth0_connection.github_via_entraid_connection[0].id
+  client_id     = auth0_client.saml.id
+
+  lifecycle {
+    precondition {
+      condition     = nonsensitive(var.github_app_id != "" && var.github_app_installation_id != "" && var.github_app_private_key != "")
+      error_message = "github_app_id, github_app_installation_id and github_app_private_key are required when github_via_entraid is enabled."
+    }
+  }
+}
+
 # Auth0 actions
 resource "auth0_action" "allow_github_organisations" {
   name    = "Allow specific GitHub Organisations and map SAML attributes"
@@ -133,9 +178,46 @@ resource "auth0_action" "allow_github_organisations" {
     value = jsonencode(var.auth0_github_allowed_orgs)
   }
 
+  dynamic "secrets" {
+    for_each = var.github_via_entraid == "off" ? [] : [1]
+    content {
+      name  = "GITHUB_VIA_ENTRA_CONNECTION_NAME"
+      value = auth0_connection.github_via_entraid_connection[0].name
+    }
+  }
+
+  dynamic "secrets" {
+    for_each = local.github_app_required ? [1] : []
+    content {
+      name  = "GITHUB_APP_ID"
+      value = var.github_app_id
+    }
+  }
+
+  dynamic "secrets" {
+    for_each = local.github_app_required ? [1] : []
+    content {
+      name  = "GITHUB_APP_INSTALLATION_ID"
+      value = var.github_app_installation_id
+    }
+  }
+
+  dynamic "secrets" {
+    for_each = local.github_app_required ? [1] : []
+    content {
+      name  = "GITHUB_APP_PRIVATE_KEY"
+      value = var.github_app_private_key
+    }
+  }
+
   dependencies {
     name    = "@octokit/rest"
     version = "20.0.2"
+  }
+
+  dependencies {
+    name    = "@octokit/auth-app"
+    version = "6.1.4"
   }
 
   dependencies {
